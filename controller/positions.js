@@ -53,6 +53,7 @@ exports.positions = async function (ctx) {
       mDataPoints.forEach(_addRelWindHeading); //add property relWindHeading to show wind direction compared to Heading
       mDataPoints.forEach(_addRelSwellHeading); //add property relWindHeading to show wind direction compared to Heading
       mDataPoints.forEach(el=>el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100); 
+      mDataPoints.forEach(el=>el.COURSE=Math.floor(el.calculatedCourse)); 
       mDataPoints.forEach(el=>el.ME_cons=el.bunkerConsumerValues[0].val); 
       mDataPoints.forEach(el=>el.AE_cons=el.bunkerConsumerValues[1].val);
       let avgSpeed=Math.floor(mDataPoints.reduce((acc,el)=>(acc+el.calculatedSpeedOverGround),0)/mDataPoints.length*100)/100;

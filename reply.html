@@ -49,6 +49,7 @@
     <table>
       <tr>
         <th>Date</th>
+        <th>Course</th>
         <th>Speed</th>
         <th>rpm</th>
         <th>M/E</th>
@@ -59,6 +60,7 @@
         <th>sDir</th>
       </tr>
       <tr>
+        <td></td>
         <td></td>
         <td>avg {{avgSpeed}}</td>
         <td></td>
@@ -74,6 +76,7 @@
       {{#each positions}}
       <tr>
         <td>{{this.DATE}}</td>
+        <td>{{this.COURSE}}°</td>
         <td>{{this.SPEED_KNOTS}}</td>
         <td>{{this.rpm}}</td>
         <td>{{this.ME_cons}}</td>
