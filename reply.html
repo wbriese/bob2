@@ -10,12 +10,13 @@
 
         .container {
           display:inline-flex;
+          margin-top: 20px;
         }
 
         table {
           font-family: arial, sans-serif;
           border-collapse: collapse;
-          width: 640px; 
+          
         }
         
         td, th {
@@ -32,7 +33,7 @@
   </head>
   <body>
 
-    <h1>MV {{ship}}!</h1>
+    <h2>Veslink Daily Reports of MV {{ship}}</h2>
    
     <form action="/ship">
       <input list="shipID" name="shipID" placeholder="{{ship}}">
@@ -48,22 +49,44 @@
     <table>
       <tr>
         <th>Date</th>
-        <th>Time</th>
-        <th>Speed (Avg={{avgSpeed}})</th>
-        
+        <th>Speed</th>
+        <th>rpm</th>
+        <th>M/E</th>
+        <th>A/E</th>
+        <th>wind</th>
+        <th>wDir</th>
+        <th>swell</th>
+        <th>sDir</th>
+      </tr>
+      <tr>
+        <td></td>
+        <td>avg {{avgSpeed}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      
       </tr>
               
       {{#each positions}}
       <tr>
         <td>{{this.DATE}}</td>
-        <td>{{this.TIME}}</td>
         <td>{{this.SPEED_KNOTS}}</td>
-       
+        <td>{{this.rpm}}</td>
+        <td>{{this.ME_cons}}</td>
+        <td>{{this.AE_cons}}</td>
+        <td>{{this.weather.fF10}}</td>
+        <td>{{this.relWindHeading}}</td>
+        <td>{{this.weather.swellHeight}}</td>
+        <td>{{this.relSwellHeading}}</td>
       </tr>
       {{/each}}
       
     </table>
-    <div><img src="https://maps.googleapis.com/maps/api/staticmap?maptype=terrain&size=640x640&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key={{GOOGLE_MAP_KEY}}"></div>
+    <div><img src="https://maps.googleapis.com/maps/api/staticmap?scale=2&maptype=terrain&size=1280x1280&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key={{GOOGLE_MAP_KEY}}"></div>
     
   </div>
 
