@@ -4,11 +4,15 @@
   "description": "BBC Online Board",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wbriese/bob2.git"
+  },
+  "engines": {
+    "node": "12.18.x"
   },
   "author": "Wilke Briese",
   "license": "MIT",
