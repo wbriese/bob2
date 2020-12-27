@@ -23,21 +23,14 @@
   </head>
   <body>
 
-    <h1>MV {{shipID}}!</h1>
+    <h1>MV {{ship}}!</h1>
 
     <form action="/ship">
-      <input list="shipID" name="shipID" value="{{shipID}}">
+      <input list="shipID" name="shipID" placeholder="{{ship}}">
       <datalist id="shipID">
-        <option value="10878">BBC Sapphire</option>  
-        <option value="10876">BBC Pearl</option>  
-        <option value="10872">BBC Emerald</option>  
-        <option value="10870">BBC Amethyst</option>  
-        <option value="10875">BBC Moonstone</option>  
-        <option value="10873">BBC Amber</option>  
-        <option value="10869">BBC Aquamarine</option>  
-        <option value="10871">BBC Citrine</option>  
-        <option value="10877">BBC Ruby</option>  
-        <option value="10874">BBC Coral</option>      
+        {{#each shipList}}
+        <option value="{{this.id}}">{{this.ship}}</option>  
+        {{/each}}    
         </datalist>
       <input type="submit" value="Submit">
     </form>

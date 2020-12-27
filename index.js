@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+
 const Koa = require('koa');
 const app = new Koa();
 const router = require('./router');

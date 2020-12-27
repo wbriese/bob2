@@ -2,6 +2,7 @@ const hb = require('handlebars');
 const fs=require('fs');
 const angles=require('angles');
 const fetch=require('node-fetch');
+const shipList=require('./shipList.json');
 
 
 
@@ -22,6 +23,7 @@ exports.positions = async function (ctx) {
 
   
   let shipID=ctx.request.query.shipID;
+  let ship=shipList.find(el=>el.id=shipID).ship;
   const view=fs.readFileSync('reply.html','utf-8');
   console.log(process.env['API_TOKEN']);
 
@@ -43,7 +45,7 @@ exports.positions = async function (ctx) {
       //mDataPoints.forEach(_addRelWindHeading); //add property relWindHeading to show wind direction compared to Heading
       mDataPoints.forEach(el=>el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100); //correct Speed from 146 to 14,6kn
       const template=hb.compile(view); 
-      ctx.body= template({positions:mDataPoints,shipID,GOOGLE_MAP_KEY:process.env.GOOGLE_MAP_KEY});
+      ctx.body= template({positions:mDataPoints,ship,GOOGLE_MAP_KEY:process.env.GOOGLE_MAP_KEY,shipList});
     });
  
  
