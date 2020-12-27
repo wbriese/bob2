@@ -2,11 +2,10 @@ const hb = require('handlebars');
 const fs=require('fs');
 const angles=require('angles');
 const fetch=require('node-fetch');
-require('dotenv').config({path: __dirname + '/.env'});
+
 
 
 function _addDateAndTime (el) {
-  //let date=new Date(el.TIMESTAMP); //for data.json
   let date=new Date(el.utcDate);
   el.DATE=date.toLocaleDateString('en-GB');
   el.TIME=date.toLocaleTimeString('en-GB');
@@ -21,7 +20,7 @@ function _addRelWindHeading (el) {
 
 exports.positions = async function (ctx) {
 
-  //console.log('Received get request',ctx.params);
+  
   let shipID=ctx.request.query.shipID;
   const view=fs.readFileSync('reply.html','utf-8');
   console.log(process.env['API_TOKEN']);
@@ -31,7 +30,7 @@ exports.positions = async function (ctx) {
     withCredentials: true,
     credentials: 'include',
     headers: {
-      'Authorization': process.env['API_TOKEN'],
+      'Authorization': "Bearer "+process.env['API_TOKEN'],
       'Content-Type': 'application/json'
     }})
     .then(response => response.json())
