@@ -43,7 +43,7 @@ exports.positions = async function (ctx) {
       //mDataPoints.forEach(_addRelWindHeading); //add property relWindHeading to show wind direction compared to Heading
       mDataPoints.forEach(el=>el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100); //correct Speed from 146 to 14,6kn
       const template=hb.compile(view); 
-      ctx.body= template({positions:mDataPoints,shipID});
+      ctx.body= template({positions:mDataPoints,shipID,GOOGLE_MAP_KEY:process.env.GOOGLE_MAP_KEY});
     });
  
  

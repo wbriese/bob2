@@ -26,7 +26,7 @@
     <h1>MV {{shipID}}!</h1>
 
     <form action="/ship">
-      <input list="shipID" name="shipID">
+      <input list="shipID" name="shipID" placeholder="{{shipID}}">
       <datalist id="shipID">
         <option value="10878">BBC Sapphire</option>  
         <option value="10876">BBC Pearl</option>  
@@ -42,7 +42,7 @@
       <input type="submit" value="Submit">
     </form>
 
-    <img src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y">
+    <img src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key={{GOOGLE_MAP_KEY}}">
     <table>
       <tr>
         <th>Date</th>
@@ -63,8 +63,6 @@
       {{/each}}
       
     </table>
-   <!--  <img src="https://maps.googleapis.com/maps/api/staticmap?center=Williamsburg,Brooklyn,NY&zoom=13&size=400x400&
-    markers=color:blue%7Clabel:S%7C11211%7C11206%7C11222&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y"> -->
 
 
   </body>
