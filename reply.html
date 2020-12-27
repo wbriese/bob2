@@ -49,9 +49,8 @@
       <tr>
         <th>Date</th>
         <th>Time</th>
-        <th>Speed </th>
-        <th>Wind-Direction</th>
-        <th>Wind-Speed</th>
+        <th>Speed (Avg={{avgSpeed}})</th>
+        
       </tr>
               
       {{#each positions}}
@@ -59,8 +58,7 @@
         <td>{{this.DATE}}</td>
         <td>{{this.TIME}}</td>
         <td>{{this.SPEED_KNOTS}}</td>
-        <td>{{this.relWindHeading}}</td>
-        <td>{{this.WIND_SPEED}}</td>
+       
       </tr>
       {{/each}}
       

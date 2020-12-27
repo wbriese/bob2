@@ -27,7 +27,7 @@ exports.positions = async function (ctx) {
   const view=fs.readFileSync('reply.html','utf-8');
   console.log(process.env['API_TOKEN']);
 
-  await fetch('http://api.routeguard.eu/RouteGuard/v1/ships/'+shipID+'/positions?MinimalData=false&Size=200',{
+  await fetch('http://api.routeguard.eu/RouteGuard/v1/ships/'+shipID+'/positions?Size=250&positionTypes=0',{
     method: 'GET',
     withCredentials: true,
     credentials: 'include',
@@ -43,9 +43,11 @@ exports.positions = async function (ctx) {
       let mDataPoints=[...data.items];
       mDataPoints.forEach(_addDateAndTime); // add properties DATE and TIME from property TIMESTAMP 
       //mDataPoints.forEach(_addRelWindHeading); //add property relWindHeading to show wind direction compared to Heading
-      mDataPoints.forEach(el=>el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100); //correct Speed from 146 to 14,6kn
+      mDataPoints=mDataPoints.filter(el=>el.calculatedSpeedOverGround>10&&el.calculatedSpeedOverGround<20);
+      mDataPoints.forEach(el=>el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100); 
+      let avgSpeed=~~(mDataPoints.reduce((acc,el)=>(acc+el.calculatedSpeedOverGround),0)/mDataPoints.length*100)/100;
       const template=hb.compile(view); 
-      ctx.body= template({positions:mDataPoints,ship,GOOGLE_MAP_KEY:process.env.GOOGLE_MAP_KEY,shipList});
+      ctx.body= template({positions:mDataPoints,ship,GOOGLE_MAP_KEY:process.env.GOOGLE_MAP_KEY,shipList,avgSpeed});
     });
  
  
