@@ -23,7 +23,7 @@ exports.positions = async function (ctx) {
 
   
   let shipID=ctx.request.query.shipID;
-  let ship=shipList.find(el=>el.id=shipID).ship;
+  let ship=shipList.find(el=>el.id==shipID).ship;
   const view=fs.readFileSync('reply.html','utf-8');
   console.log(process.env['API_TOKEN']);
 
