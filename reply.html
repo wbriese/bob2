@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 640px; 
+        }
+        
+        td, th {
+          border: 1px solid #8b8989;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        </style>
+      <title>Ship Positions</title>
+  </head>
+  <body>
+
+    <h1>MV {{shipID}}!</h1>
+
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Speed </th>
+        <th>Wind-Direction</th>
+        <th>Wind-Speed</th>
+      </tr>
+              
+      {{#each positions}}
+      <tr>
+        <td>{{this.DATE}}</td>
+        <td>{{this.TIME}}</td>
+        <td>{{this.SPEED_KNOTS}}</td>
+        <td>{{this.relWindHeading}}</td>
+        <td>{{this.WIND_SPEED}}</td>
+      </tr>
+      {{/each}}
+      
+    </table>
+   <!--  <img src="https://maps.googleapis.com/maps/api/staticmap?center=Williamsburg,Brooklyn,NY&zoom=13&size=400x400&
+    markers=color:blue%7Clabel:S%7C11211%7C11206%7C11222&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y"> -->
+    <img src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y">
+
+  </body>
+</html>
