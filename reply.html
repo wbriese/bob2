@@ -25,6 +25,24 @@
 
     <h1>MV {{shipID}}!</h1>
 
+    <form action="/ship">
+      <input list="shipID" name="shipID">
+      <datalist id="shipID">
+        <option value="10878">BBC Sapphire</option>  
+        <option value="10876">BBC Pearl</option>  
+        <option value="10872">BBC Emerald</option>  
+        <option value="10870">BBC Amethyst</option>  
+        <option value="10875">BBC Moonstone</option>  
+        <option value="10873">BBC Amber</option>  
+        <option value="10869">BBC Aquamarine</option>  
+        <option value="10871">BBC Citrine</option>  
+        <option value="10877">BBC Ruby</option>  
+        <option value="10874">BBC Coral</option>      
+        </datalist>
+      <input type="submit" value="Submit">
+    </form>
+
+    <img src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y">
     <table>
       <tr>
         <th>Date</th>
@@ -47,7 +65,7 @@
     </table>
    <!--  <img src="https://maps.googleapis.com/maps/api/staticmap?center=Williamsburg,Brooklyn,NY&zoom=13&size=400x400&
     markers=color:blue%7Clabel:S%7C11211%7C11206%7C11222&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y"> -->
-    <img src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key=AIzaSyCAN4dvLQ5Jb5KDUFfJdf6keqtZOf7V1_Y">
+
 
   </body>
 </html>
