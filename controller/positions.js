@@ -48,14 +48,77 @@ exports.positions = async function (ctx) {
     {console.log(data);
 
       let mDataPoints=[...data.items];
-      mDataPoints=mDataPoints.filter(el=>el.calculatedSpeedOverGround>10&&el.calculatedSpeedOverGround<20);
+      mDataPoints=mDataPoints.filter(el=>el.calculatedSpeedOverGround>5);
       mDataPoints.forEach(_addDateAndTime); // add properties DATE and TIME from property TIMESTAMP 
       mDataPoints.forEach(_addRelWindHeading); //add property relWindHeading to show wind direction compared to Heading
       mDataPoints.forEach(_addRelSwellHeading); //add property relWindHeading to show wind direction compared to Heading
-      mDataPoints.forEach(el=>el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100); 
-      mDataPoints.forEach(el=>el.COURSE=Math.floor(el.calculatedCourse)); 
-      mDataPoints.forEach(el=>el.ME_cons=el.bunkerConsumerValues[0].val); 
-      mDataPoints.forEach(el=>el.AE_cons=el.bunkerConsumerValues[1].val);
+      mDataPoints.forEach(el=>
+        {
+          el.SPEED_KNOTS=Math.floor(el.calculatedSpeedOverGround*100)/100; 
+          el.COURSE=Math.floor(el.calculatedCourse); 
+          el.ME_cons=el.bunkerConsumerValues[0]?el.bunkerConsumerValues[0].val:0; 
+          el.AE_cons=el.bunkerConsumerValues[1]?el.bunkerConsumerValues[1].val:0;
+          el.dist=el.additionalValues.find(item=>item.id==7)?el.additionalValues.find(item=>item.id==7).val:0;
+          el.draftAft=el.additionalValues.find(item=>item.id==1)?el.additionalValues.find(item=>item.id==1).val:0;
+          el.draftFwd=el.additionalValues.find(item=>item.id==2)?el.additionalValues.find(item=>item.id==2).val:0;
+          el.nextPort=el.additionalValues.find(item=>item.id==25)?el.additionalValues.find(item=>item.id==25).val:0;
+          el.distToGo=el.additionalValues.find(item=>item.id==45)?el.additionalValues.find(item=>item.id==45).val:0;
+          el.AVGSpeed=el.additionalValues.find(item=>item.id==55)?el.additionalValues.find(item=>item.id==55).val:0;
+          el.fuelNM=el.dist?Math.floor(10*(el.ME_cons*1000/(el.dist)))/10:0;
+          el.USDNM=el.dist?Math.floor(10*(el.fuelNM*300/1000+12000/(el.AVGSpeed*24)))/10:0;
+        });
+
+      /* "additionalValues": [
+        {
+            "id": 2,
+            "val": "5.81"
+        },
+        {
+            "id": 1,
+            "val": "6.52"
+        },
+        {
+            "id": 38,
+            "val": "15.5"
+        },
+        {
+            "id": 34,
+            "val": "Laden"
+        },
+        {
+            "id": 42,
+            "val": "1155001"
+        },
+        {
+            "id": 25,
+            "val": "BEAUMONT"
+        },
+        {
+            "id": 45,
+            "val": "1292"
+        },
+        {
+            "id": 27,
+            "val": "2020-06-15 22:00"
+        },
+        {
+            "id": 7,
+            "val": "376"
+        },
+        {
+            "id": 23,
+            "val": "24"
+        },
+        {
+            "id": 55,
+            "val": "15.7"
+        },
+        {
+            "id": 83,
+            "val": "-4"
+        }
+    ] */
+
       let avgSpeed=Math.floor(mDataPoints.reduce((acc,el)=>(acc+el.calculatedSpeedOverGround),0)/mDataPoints.length*100)/100;
       const template=hb.compile(view); 
       ctx.body= template({positions:mDataPoints,ship,GOOGLE_MAP_KEY:process.env.GOOGLE_MAP_KEY,shipList,avgSpeed});

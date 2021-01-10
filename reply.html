@@ -58,26 +58,22 @@
         <th>wDir</th>
         <th>swell</th>
         <th>sDir</th>
-      </tr>
-      <tr>
-        <td></td>
-        <td></td>
-        <td>avg {{avgSpeed}}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      
+        
+        <th>Draft A</th>
+        <th>Draft F</th>
+        <th>Dist.</th>
+        <th>to go</th>
+        <th>fuel l/nm</th>
+        <th>$/nm</th>
+        <th>next Port</th>
+        
       </tr>
               
       {{#each positions}}
       <tr>
         <td>{{this.DATE}}</td>
         <td>{{this.COURSE}}°</td>
-        <td>{{this.SPEED_KNOTS}}</td>
+        <td>{{this.AVGSpeed}}</td>
         <td>{{this.rpm}}</td>
         <td>{{this.ME_cons}}</td>
         <td>{{this.AE_cons}}</td>
@@ -85,6 +81,13 @@
         <td>{{this.relWindHeading}}</td>
         <td>{{this.weather.swellHeight}}</td>
         <td>{{this.relSwellHeading}}</td>
+        <td>{{this.draftAft}}</td>
+        <td>{{this.draftFwd}}</td>
+        <td>{{this.dist}}</td>
+        <td>{{this.distToGo}}</td>
+        <td>{{this.fuelNM}}</td>
+        <td>{{this.USDNM}}</td>
+        <td>{{this.nextPort}}</td>
       </tr>
       {{/each}}
       
