@@ -2,7 +2,16 @@
 <html lang="en">
   <head>
       <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+      <script src=".\node_modules\chart.js\dist\Chart.min.js"></script>
+	  
+
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
 
         img {
           flex:none;
@@ -44,6 +53,7 @@
         </datalist>
       <input type="submit" value="Submit">
     </form>
+    
 
     <div class="container">
     <table>
@@ -56,9 +66,10 @@
         <th>A/E</th>
         <th>wind</th>
         <th>wDir</th>
+        <th>Wind Force</th>
         <th>swell</th>
         <th>sDir</th>
-        
+        <th>Swell Force</th>
         <th>Draft A</th>
         <th>Draft F</th>
         <th>Dist.</th>
@@ -75,12 +86,14 @@
         <td>{{this.COURSE}}°</td>
         <td>{{this.AVGSpeed}}</td>
         <td>{{this.rpm}}</td>
-        <td>{{this.ME_cons}}</td>
-        <td>{{this.AE_cons}}</td>
+        <td>{{this.MEcons}}</td>
+        <td>{{this.AEcons}}</td>
         <td>{{this.weather.fF10}}</td>
         <td>{{this.relWindHeading}}</td>
+        <td>{{this.projectedWindForce}}</td>
         <td>{{this.weather.swellHeight}}</td>
         <td>{{this.relSwellHeading}}</td>
+        <td>{{this.projectedSwellForce}}</td>
         <td>{{this.draftAft}}</td>
         <td>{{this.draftFwd}}</td>
         <td>{{this.dist}}</td>
@@ -96,5 +109,58 @@
     
   </div>
 
+  <canvas id="myChart" width="1200" height="200"></canvas>
+  <script>
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+				datasets: [{
+					label: 'USD/NM',
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					data: [
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.USDNM}} },
+                {{/each}}
+            		],
+					fill: false,
+        },
+        {
+					label: 'Projected Wind Force',
+					backgroundColor: 'rgb(201, 203, 207)',
+					borderColor: 'rgb(201, 203, 207)',
+					data: [
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedWindForce}} },
+                {{/each}}
+            		],
+					fill: false,
+        },
+        {
+					label: 'Projected Swell Force',
+					backgroundColor: 'rgb(54, 162, 235)',
+					borderColor: 'rgb(54, 162, 235)',
+					data: [
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedSwellForce}} },
+                {{/each}}
+            		],
+					fill: false,
+				}]
+			},
+    options: {
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'day'
+                }
+            }]
+        }
+    }
+});
+  </script>
+ 
   </body>
 </html>

@@ -1,11 +1,8 @@
-'use strict';
+import Router from 'koa-router';
+import positions from './controller/positions.js';
 
-const Router = require('koa-router');
 const router = new Router();
-const positions=require('./controller/positions');
 
-router.get('/ship',positions.positions);
+router.get('/ship', positions);
 
-module.exports = router;
-
-
+export default router;
