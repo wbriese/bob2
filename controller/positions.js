@@ -18,7 +18,7 @@ export default async function positions(ctx) {
   const { ship } = shipList.find((el) => el.id === parseInt(shipID, 10));
   const view = fs.readFileSync('reply.html', 'utf-8');
 
-  await fetch(`http://api.routeguard.eu/RouteGuard/v1/ships/${shipID}/positions?Size=60&positionTypes=0&Sources=2`, {
+  await fetch(`http://api.routeguard.eu/RouteGuard/v1/ships/${shipID}/positions?Size=360&positionTypes=0&Sources=2`, {
     method: 'GET',
     withCredentials: true,
     credentials: 'include',
