@@ -38,41 +38,125 @@
           background-color: #dddddd;
         }
         </style>
-      <title>Amber Type Ship Performance Comparison</title>
+      <title>Ship Positions</title>
   </head>
   <body>
 
-    <h2>Amber Type Ship Performance average USD/NM with max wind 20kn and 2m swell</h2>
+    <h2>Veslink Daily Reports of MV {{ship.ship}}</h2>
    
-  <canvas id="myChart" width="1600" height="800"></canvas>
+    <form action="/ship">
+      <input list="shipID" name="shipID" placeholder="{{ship}}">
+      <datalist id="shipID">
+        {{#each shipList}}
+        <option value="{{this.id}}">{{this.ship}}</option>  
+        {{/each}}    
+        </datalist>
+      <input type="submit" value="Submit">
+    </form>
+    
+
+    <div class="container">
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Course</th>
+        <th>Speed</th>
+        <th>rpm</th>
+        <th>M/E</th>
+        <th>Calc M/E</th>
+        <th>A/E</th>
+        <th>wind</th>
+        <th>wDir</th>
+        <th>Wind Force</th>
+        <th>swell</th>
+        <th>sDir</th>
+        <th>Swell Force</th>
+        <th>Draft A</th>
+        <th>Draft F</th>
+        <th>Dist.</th>
+        <th>to go</th>
+        <th>fuel l/nm</th>
+        <th>$/nm</th>
+        <th>next Port</th>
+        
+      </tr>
+              
+      {{#each positions}}
+      <tr>
+        <td>{{this.DATE}}</td>
+        <td>{{this.COURSE}}°</td>
+        <td>{{this.AVGSpeed}}</td>
+        <td>{{this.rpm}}</td>
+        <td>{{this.MEconsAvgSpeed}}</td>
+        <td>{{this.neuralCons}}</td>
+        <td>{{this.AEcons}}</td>
+        <td>{{this.weather.fF10}}</td>
+        <td>{{this.relWindHeading}}</td>
+        <td>{{this.projectedWindForce}}</td>
+        <td>{{this.weather.swellHeight}}</td>
+        <td>{{this.relSwellHeading}}</td>
+        <td>{{this.projectedSwellForce}}</td>
+        <td>{{this.draftAft}}</td>
+        <td>{{this.draftFwd}}</td>
+        <td>{{this.dist}}</td>
+        <td>{{this.distToGo}}</td>
+        <td>{{this.fuelNM}}</td>
+        <td>{{this.USDNM}}</td>
+        <td>{{this.nextPort}}</td>
+      </tr>
+      {{/each}}
+      
+    </table>
+    <div><img src="https://maps.googleapis.com/maps/api/staticmap?scale=2&maptype=terrain&size=1280x1280&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key={{GOOGLE_MAP_KEY}}"></div>
+    
+  </div>
+
+  <canvas id="myChart" width="1200" height="200"></canvas>
   <script>
   var ctx = document.getElementById('myChart').getContext('2d');
   var chart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
-				datasets: [
-        {{#each dataSets}} 
-        {
-					label: "{{this.ship.ship}}",
-					backgroundColor: "{{this.ship.col}}",
-					borderColor: "{{this.ship.col}}",
+				datasets: [{
+					label: 'USD/NM',
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
 					data: [
-          {{#each this.mDataPoints}}
-                
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{../ship.avgUSDNM}} },
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.USDNM}} },
                 {{/each}}
             		],
 					fill: false,
         },
-        {{/each}}
-        ]
+        {
+					label: 'Projected Wind Force',
+					backgroundColor: 'rgb(201, 203, 207)',
+					borderColor: 'rgb(201, 203, 207)',
+					data: [
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedWindForce}} },
+                {{/each}}
+            		],
+					fill: false,
+        },
+        {
+					label: 'Projected Swell Force',
+					backgroundColor: 'rgb(54, 162, 235)',
+					borderColor: 'rgb(54, 162, 235)',
+					data: [
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedSwellForce}} },
+                {{/each}}
+            		],
+					fill: false,
+				}]
 			},
     options: {
         scales: {
             xAxes: [{
                 type: 'time',
                 time: {
-                    unit: 'week'
+                    unit: 'day'
                 }
             }]
         }

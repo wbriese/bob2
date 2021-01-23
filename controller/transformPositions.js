@@ -38,19 +38,19 @@ function addProperties(el) {
   const AVGSpeed = el.additionalValues.find((item) => item.id === 55) ? el.additionalValues.find((item) => item.id === 55).val : 0;
   const fuelNM = dist ? Math.floor(10 * ((MEcons + AEcons) * 1000 / (dist))) / 10 : 0;
   const USDNM = dist ? Math.floor(10 * (fuelNM * 300 / 1000 + 12000 / (AVGSpeed * 24))) / 10 : 0;
+  const MEconsAvgSpeed = dist ? Math.floor(10 * (MEcons + AEcons) / dist * AVGSpeed * 24) / 10 : 0;
   return {
-    ...el, SPEED_KNOTS, COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, AVGSpeed, fuelNM, USDNM,
+    ...el, SPEED_KNOTS, COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, AVGSpeed, fuelNM, USDNM, MEconsAvgSpeed,
   };
 }
 
 export default function transformPositions(positions) {
   let mDataPoints = [...positions];
-  mDataPoints = mDataPoints.filter((el) => el.additionalValues.find((item) => item.id === 7) && el.calculatedCourse && el.weather.swellHeight <= 2 && el.weather.fF10 < 20);
   mDataPoints = mDataPoints.map(addDateAndTime);
   mDataPoints = mDataPoints.map(addRelWindHeading);
   mDataPoints = mDataPoints.map(addRelSwellHeading);
   mDataPoints = mDataPoints.map(addProperties);
-  mDataPoints = mDataPoints.filter((el) => (el.USDNM < 70 && el.USDNM > 45));
+  
   return mDataPoints;
 }
 
