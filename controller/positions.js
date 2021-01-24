@@ -1,47 +1,60 @@
 import hb from 'handlebars';
 import fs from 'fs';
-import fetch from 'node-fetch';
-import transformPositions from './transformPositions.js';
 import getNeuralNetFunction from './createNeural.js';
+import loadPositionData from './loadPositionData.js';
+import transformPositions from './transformPositions.js';
 
 const shipList = JSON.parse(fs.readFileSync('./controller/shipList.json', 'utf-8'));
 
 function calcAVGSpeed(mDataPoints) {
   return Math.floor(mDataPoints.reduce(
     (acc, el) => (acc + el.calculatedSpeedOverGround), 0,
-    // eslint-disable-next-line no-mixed-operators
   ) / mDataPoints.length * 100) / 100;
 }
 
-export default async function positions(ctx) {
+function getPropCurve(ship) {
+  const propCurve = [];
+  for (let speed = 12; speed < 16; speed += 0.2) {
+    // eslint-disable-next-line max-len
+    const cons = ship.propPolynom[0] + ship.propPolynom[1] * speed + ship.propPolynom[2] * speed ** 2 + ship.propPolynom[3] * speed ** 3;
+    propCurve.push({ speed, cons });
+  }
+  return propCurve;
+}
+
+function getNeuralNetPropCurve(ship, mDataPoints) {
+  const neuralPropCurve = [];
+  const neuralConsFunction = getNeuralNetFunction(mDataPoints, ship);
+  for (let speed = 12; speed < 16; speed += 0.2) {
+    neuralPropCurve.push({
+      speed,
+      cons: neuralConsFunction({
+        draftAft: 5.8,
+        draftFwd: 5.2,
+        projectedWindForce: 0,
+        projectedSwellForce: 0,
+        AVGSpeed: speed,
+        rpm: 90 * speed / 12,
+      })
+    });
+  }
+  return neuralPropCurve;
+}
+
+export default async function showPositions(ctx) {
   const { GOOGLE_MAP_KEY } = process.env;
   const { shipID } = ctx.request.query;
-  const ship = shipList.find((el) => el.id === parseInt(shipID, 10));
+  const ship = shipList.find((el) => el.id === Number.parseFloat(shipID, 10));
   const view = fs.readFileSync('positions.html', 'utf-8');
 
-  await fetch(`http://api.routeguard.eu/RouteGuard/v1/ships/${shipID}/positions?Size=300&positionTypes=0&Sources=2`, {
-    method: 'GET',
-    withCredentials: true,
-    credentials: 'include',
-    headers: {
-      Authorization: `Bearer ${global.bearer}`,
-      'Content-Type': 'application/json',
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // eslint-disable-next-line no-console
-      let mDataPoints = data.items;
-      mDataPoints = transformPositions(data.items);
-      mDataPoints = mDataPoints.filter((el) => el.additionalValues.find((item) => item.id === 7) && el.calculatedCourse && el.weather.swellHeight <= 4 && el.weather.fF10 < 30 && parseInt(el.dist) > 200);
-      const neuralConsFunction = getNeuralNetFunction(mDataPoints, ship);
-      mDataPoints = mDataPoints.map((pos) => ({ ...pos, neuralCons: Math.floor(10*neuralConsFunction(pos))/10 }));
+  let mDataPoints = await loadPositionData(ship);
+  mDataPoints = transformPositions(mDataPoints);
 
-      //  console.log ('mDataPoints', mDataPoints);
-      const avgSpeed = calcAVGSpeed(mDataPoints);
-      const template = hb.compile(view);
-      ctx.body = template({
-        positions: mDataPoints, ship, GOOGLE_MAP_KEY, shipList, avgSpeed,
-      });
-    });
+  const propCurve = getPropCurve(ship);
+  const neuralPropCurve = getNeuralNetPropCurve(ship, mDataPoints);
+  const avgSpeed = calcAVGSpeed(mDataPoints);
+  const template = hb.compile(view);
+  ctx.body = template({
+    positions: mDataPoints, ship, GOOGLE_MAP_KEY, shipList, avgSpeed, propCurve, neuralPropCurve
+  });
 }

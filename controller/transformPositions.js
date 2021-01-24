@@ -8,34 +8,36 @@ function addDateAndTime(el) {
 }
 
 function addRelWindHeading(el) {
-  const course = parseInt(el.calculatedCourse, 10);
-  const windAngle = parseInt(el.weather.dD10, 10);
-  const diffAngle = angles.distance(course, windAngle);
-  const projectedWindForce = Math.floor(el.weather.fF10 * Math.cos(angles.toRad(diffAngle)) * 100) / 50;
+  const course = Number.parseFloat(+el.calculatedCourse.toFixed(2), 10);
+  const windAngle = Number.isNaN(el.weather.swellDirection) ? Number.parseFloat(el.weather.dD10, 10) : 0;
+  const diffAngle = Math.round(angles.distance(course, windAngle));
+  const projectedWindForce = Math.floor(Number.parseFloat(el.weather.fF10, 10) * Math.cos(angles.toRad(diffAngle)) * 10);
+  if (Number.isNaN(projectedWindForce)) console.log("Fehler Wind!!",el);
   const relWindHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
   return { ...el, relWindHeading, projectedWindForce };
 }
 
 function addRelSwellHeading(el) {
-  const course = parseInt(el.calculatedCourse, 10);
-  const swellAngle = parseInt(el.weather.swellDirection, 10);
-  const diffAngle = angles.distance(course, swellAngle);
+  const course = Number.parseFloat(+el.calculatedCourse.toFixed(2), 10);
+  const swellAngle = Number.isNaN(el.weather.swellDirection) ? Number.parseFloat(el.weather.swellDirection, 10) : 0;
+  const diffAngle = Math.round(angles.distance(course, swellAngle));
   const relSwellHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
-  const projectedSwellForce = Math.floor(el.weather.swellHeight * Math.cos(angles.toRad(diffAngle)) * 100) / 20;
+  const projectedSwellForce = Math.floor(Number.parseFloat(el.weather.swellHeight, 10) * Math.cos(angles.toRad(diffAngle)) * 100);
+  if (Number.isNaN(projectedSwellForce)) console.log("Fehler !! Swell:",el);
   return { ...el, relSwellHeading, projectedSwellForce };
 }
 
 function addProperties(el) {
-  const SPEED_KNOTS = Math.floor(el.calculatedSpeedOverGround * 100) / 100;
-  const COURSE = Math.floor(el.calculatedCourse);
-  const MEcons = el.bunkerConsumerValues[0] ? el.bunkerConsumerValues[0].val : 0;
-  const AEcons = el.bunkerConsumerValues[1] ? el.bunkerConsumerValues[1].val : 0;
-  const dist = el.additionalValues.find((item) => item.id === 7) ? el.additionalValues.find((item) => item.id === 7).val : 0;
-  const draftAft = el.additionalValues.find((item) => item.id === 1) ? el.additionalValues.find((item) => item.id === 1).val : 0;
-  const draftFwd = el.additionalValues.find((item) => item.id === 2) ? el.additionalValues.find((item) => item.id === 2).val : 0;
-  const nextPort = el.additionalValues.find((item) => item.id === 25) ? el.additionalValues.find((item) => item.id === 25).val : 0;
-  const distToGo = el.additionalValues.find((item) => item.id === 45) ? el.additionalValues.find((item) => item.id === 45).val : 0;
-  const AVGSpeed = el.additionalValues.find((item) => item.id === 55) ? el.additionalValues.find((item) => item.id === 55).val : 0;
+  const SPEED_KNOTS = Number.parseFloat(el.calculatedSpeedOverGround.toFixed(2));
+  const COURSE = Number.parseInt(el.calculatedCourse, 10);
+  const MEcons = Number.parseFloat(el.bunkerConsumerValues[0].val, 10);
+  const AEcons = Number.parseFloat(el.bunkerConsumerValues[1].val, 10);
+  const dist = Number.parseFloat(el.additionalValues.find((item) => item.id === 7).val, 10);
+  const draftAft = Number.parseFloat(el.additionalValues.find((item) => item.id === 1).val, 10);
+  const draftFwd = Number.parseFloat(el.additionalValues.find((item) => item.id === 2).val, 10);
+  const nextPort = el.additionalValues.find((item) => item.id === 25).val;
+  const distToGo = Number.parseFloat(el.additionalValues.find((item) => item.id === 45).val, 10);
+  const AVGSpeed = Number.parseFloat(el.additionalValues.find((item) => item.id === 55).val, 10);
   const fuelNM = dist ? Math.floor(10 * ((MEcons + AEcons) * 1000 / (dist))) / 10 : 0;
   const USDNM = dist ? Math.floor(10 * (fuelNM * 300 / 1000 + 12000 / (AVGSpeed * 24))) / 10 : 0;
   const MEconsAvgSpeed = dist ? Math.floor(10 * (MEcons + AEcons) / dist * AVGSpeed * 24) / 10 : 0;
@@ -50,10 +52,5 @@ export default function transformPositions(positions) {
   mDataPoints = mDataPoints.map(addRelWindHeading);
   mDataPoints = mDataPoints.map(addRelSwellHeading);
   mDataPoints = mDataPoints.map(addProperties);
-  
   return mDataPoints;
 }
-
-/* {{#each this.mDataPoints}}
-                   {t: new Date("{{this.DATE}}").valueOf(), y: {{this.USDNM}} },
-                {{/each}} */

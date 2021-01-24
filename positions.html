@@ -112,6 +112,7 @@
   </div>
 
   <canvas id="myChart" width="1200" height="200"></canvas>
+  <canvas id="myChart2" width="640" height="480"></canvas>
   <script>
   var ctx = document.getElementById('myChart').getContext('2d');
   var chart = new Chart(ctx, {
@@ -162,6 +163,59 @@
         }
     }
 });
+
+
+var ctx2 = document.getElementById('myChart2').getContext('2d');
+  var chart2 = new Chart(ctx2, {
+    type: 'scatter',
+    data: {
+				datasets: [{
+					label: 'Data Points',
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					data: [
+                {{#each positions}}  
+                {x: {{this.AVGSpeed}}, y: {{this.MEconsAvgSpeed}} },
+                {{/each}}
+            		],
+					fill: false,
+        },
+        {
+					label: 'Ship Standard Propeller Curve',
+					backgroundColor: 'rgb(100, 103, 207)',
+					borderColor: 'rgb(100, 103, 207)',
+					data: [
+                {{#each propCurve}}  
+                {x: {{this.speed}}, y: {{this.cons}} },
+                {{/each}}
+                ],
+          type: 'line',
+					fill: false,
+        },
+        {
+					label: 'Neural Propeller Curve (no Wind, no Waves, 6m draft)',
+					backgroundColor: 'rgb(100, 203, 207)',
+					borderColor: 'rgb(100, 203, 207)',
+					data: [
+                {{#each neuralPropCurve}}  
+                {x: {{this.speed}}, y: {{this.cons}} },
+                {{/each}}
+                ],
+          type: 'line',
+					fill: false,
+        }
+      ]
+      },
+      options: {
+        scales: {
+            xAxes: [{
+                type: 'linear',
+                position: 'bottom'
+            }]
+        }
+    }
+});
+
   </script>
  
   </body>

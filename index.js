@@ -9,8 +9,8 @@ dotenv.config();
 
 const { PORT } = process.env;
 
-app.use(getBearer);
 app.use(koaStatic('./'));
+app.use(getBearer);
 app.use(router.routes());
 
 app.listen(PORT, () => {
