@@ -63,7 +63,7 @@
         <th>Speed</th>
         <th>rpm</th>
         <th>M/E</th>
-        <th>Calc M/E</th>
+        <th>Neural M/E</th>
         <th>A/E</th>
         <th>wind</th>
         <th>wDir</th>
@@ -73,6 +73,7 @@
         <th>Swell Force</th>
         <th>Draft A</th>
         <th>Draft F</th>
+        <th>Sea °C</th>
         <th>Dist.</th>
         <th>to go</th>
         <th>fuel l/nm</th>
@@ -98,6 +99,7 @@
         <td>{{this.projectedSwellForce}}</td>
         <td>{{this.draftAft}}</td>
         <td>{{this.draftFwd}}</td>
+        <td>{{this.seaTemperature}}</td>
         <td>{{this.dist}}</td>
         <td>{{this.distToGo}}</td>
         <td>{{this.fuelNM}}</td>
@@ -135,7 +137,7 @@
 					borderColor: 'rgb(201, 203, 207)',
 					data: [
                 {{#each positions}}  
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedWindForce}} },
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedWindForce}}/20 },
                 {{/each}}
             		],
 					fill: false,
@@ -146,7 +148,7 @@
 					borderColor: 'rgb(54, 162, 235)',
 					data: [
                 {{#each positions}}  
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedSwellForce}} },
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedSwellForce}}/10 },
                 {{/each}}
             		],
 					fill: false,

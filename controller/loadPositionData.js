@@ -11,6 +11,7 @@ function filterBeforeTransform(el) {
   && (!Number.isNaN(Number(el.weather.dD10)) || Number.parseFloat(el.weather.fF10 === 0)) // Wind direction
   && Number.parseFloat(el.weather.swellHeight, 10) <= 4
   && Number.parseFloat(el.weather.fF10, 10) < 30
+  && !Number.isNaN(Number(el.weather.seaTemperature))
   && !Number.isNaN(Number(el.rpm))
   && el.bunkerConsumerValues[0] 
   && !Number.isNaN(Number(el.bunkerConsumerValues[0].val)) // ME cons
@@ -18,6 +19,7 @@ function filterBeforeTransform(el) {
   && !Number.isNaN(Number(el.bunkerConsumerValues[1].val)) // AE cons
   && el.additionalValues.find((item) => item.id === 7)
   && !Number.isNaN(Number(el.additionalValues.find((item) => item.id === 7).val)) // distance
+  && Number.parseFloat(el.additionalValues.find((item) => item.id === 7).val) > 200
   && el.additionalValues.find((item) => item.id === 1)
   && !Number.isNaN(Number(el.additionalValues.find((item) => item.id === 1).val)) // draftAft
   && el.additionalValues.find((item) => item.id === 2)
@@ -30,7 +32,7 @@ function filterBeforeTransform(el) {
 }
 
 export default async function loadPositionData(ship) {
-  const data = await fetch(`http://api.routeguard.eu/RouteGuard/v1/ships/${ship.id}/positions?positionTypes=0&Sources=2`, {
+  const data = await fetch(`http://api.routeguard.eu/RouteGuard/v1/ships/${ship.id}/positions?Size=365&positionTypes=0&Sources=2`, {
     method: 'GET',
     withCredentials: true,
     credentials: 'include',

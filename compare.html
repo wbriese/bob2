@@ -45,6 +45,8 @@
     <h2>Amber Type Ship Performance average USD l/NM with max wind 20kn and 2m swell</h2>
    
   <canvas id="myChart" width="1600" height="800"></canvas>
+  <canvas id="myChart2" width="640" height="480"></canvas>
+  
   <script>
   var ctx = document.getElementById('myChart').getContext('2d');
   var chart = new Chart(ctx, {
@@ -78,6 +80,49 @@
         }
     }
 });
+
+var ctx2 = document.getElementById('myChart2').getContext('2d');
+  var chart2 = new Chart(ctx2, {
+    type: 'line',
+    data: {
+				datasets: [
+        {{#each dataSets}} 
+        {
+					label: 'Neural {{this.ship.ship}}',
+					backgroundColor: '{{this.ship.col}}',
+					borderColor: '{{this.ship.col}}',
+					data: [
+                {{#each this.neuralPropCurve}}  
+                {x: {{this.speed}}, y: {{this.cons}} },
+                {{/each}}
+                ],
+          fill: false,
+        },
+        {{/each}}
+        {
+					label: "ShipType Propeller Curve",
+					backgroundColor: "black",
+          borderColor: "black",
+          borderWidth: 5,
+					data: [
+                {{#each propCurve}}  
+                {x: {{this.speed}}, y: {{this.cons}} },
+                {{/each}}
+                ],
+          fill: false,
+        },
+      ]
+      },
+      options: {
+        scales: {
+            xAxes: [{
+                type: 'linear',
+                position: 'bottom'
+            }]
+        }
+    }
+});
+
   </script>
  
   </body>

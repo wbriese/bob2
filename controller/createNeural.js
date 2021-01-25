@@ -2,7 +2,13 @@
 import brain from 'brain.js';
 import _ from 'lodash';
 
-export default function getNeuralNetFunction(allPositions, ship) {
+function getSeaTrialConsumption(speed, ship) {
+  const cons = ship.propPolynom[0] + ship.propPolynom[1] * speed + ship.propPolynom[2] * speed ** 2 + ship.propPolynom[3] * speed ** 3;
+  // console.log('Speed: ', speed, ' Cons: ', cons);
+  return cons;
+}
+
+export function getNeuralNetFunction(allPositions, ship) {
   const maxWindForce = _.max(allPositions.map((pos) => Math.abs(pos.projectedWindForce)));
   const maxSwellForce = _.max(allPositions.map((pos) => Math.abs(pos.projectedSwellForce)));
   const minDraft = 5;
@@ -11,33 +17,29 @@ export default function getNeuralNetFunction(allPositions, ship) {
   const maxAVGSpeed = 20;
   const minRPM = 90;
   const maxRPM = 120;
-
-  function getSeaTrialConsumption(speed) {
-    const cons = ship.propPolynom[0] + ship.propPolynom[1] * speed + ship.propPolynom[2] * speed ** 2 + ship.propPolynom[3] * speed ** 3;
-    //console.log('Speed: ', speed, ' Cons: ', cons);
-    return cons;
-  }
+  const maxSeaTemperature = 40;
 
   function scaleDownInput(position) {
+    console.log(position);
     const input = [
       (0.5 * position.draftAft + 0.5 * position.draftFwd - minDraft) / (maxDraft - minDraft),
       0.50 + position.projectedWindForce / maxWindForce / 2,
       0.50 + position.projectedSwellForce / maxSwellForce / 2,
       (position.AVGSpeed - minAVGSpeed) / (maxAVGSpeed - minAVGSpeed),
       (position.rpm - minRPM) / (maxRPM - minRPM),
+      //position.seaTemperature / maxSeaTemperature,
     ];
-    //console.log('scaledDownInput',input);
     return input;
   }
 
   function scaleDownOutput(position) {
-    const output = [0.5 * position.MEconsAvgSpeed / getSeaTrialConsumption(position.AVGSpeed)];
+    const output = [0.5 * position.MEconsAvgSpeed / getSeaTrialConsumption(position.AVGSpeed, ship)];
     //console.log('output into NN', output);
     return output;
   }
 
   function scaleUpOutput(value, speed) {
-    const output = 2 * value * getSeaTrialConsumption(speed);
+    const output = 2 * value * getSeaTrialConsumption(speed, ship);
     //console.log('Output from NN: speed', speed, ' MEcons:', output);
     return output;
   }
@@ -65,4 +67,32 @@ export default function getNeuralNetFunction(allPositions, ship) {
 
   // Return a function that provides the Fuel Consumption given a position as Input
   return (position) => scaleUpOutput(net.toFunction()(scaleDownInput(position)), position.AVGSpeed);
+}
+
+export function getNeuralNetPropCurve(neuralConsFunction) {
+  const neuralPropCurve = [];
+  for (let speed = 12; speed < 16.5; speed += 0.2) {
+    neuralPropCurve.push({
+      speed,
+      cons: neuralConsFunction({
+        draftAft: 5.8,
+        draftFwd: 5.2,
+        projectedWindForce: 0,
+        projectedSwellForce: 0,
+        AVGSpeed: speed,
+        rpm: 90 * speed / 12,
+        // seaTemperature: 22,
+      })
+    });
+  }
+  return neuralPropCurve;
+}
+
+export function getPropCurve(ship) {
+  const propCurve = [];
+  for (let speed = 12; speed < 16.5; speed += 0.2) {
+    const cons = getSeaTrialConsumption(speed, ship);
+    propCurve.push({ speed, cons });
+  }
+  return propCurve;
 }

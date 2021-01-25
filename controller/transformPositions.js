@@ -41,8 +41,9 @@ function addProperties(el) {
   const fuelNM = dist ? Math.floor(10 * ((MEcons + AEcons) * 1000 / (dist))) / 10 : 0;
   const USDNM = dist ? Math.floor(10 * (fuelNM * 300 / 1000 + 12000 / (AVGSpeed * 24))) / 10 : 0;
   const MEconsAvgSpeed = dist ? Math.floor(10 * (MEcons + AEcons) / dist * AVGSpeed * 24) / 10 : 0;
+  const seaTemperature = parseFloat(el.weather.seaTemperature);
   return {
-    ...el, SPEED_KNOTS, COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, AVGSpeed, fuelNM, USDNM, MEconsAvgSpeed,
+    ...el, SPEED_KNOTS, COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, seaTemperature, AVGSpeed, fuelNM, USDNM, MEconsAvgSpeed,
   };
 }
 
