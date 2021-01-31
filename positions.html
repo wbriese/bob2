@@ -45,13 +45,24 @@
     <h2>Veslink Daily Reports of MV {{ship.ship}}</h2>
    
     <form action="/ship">
-      <input list="shipID" name="shipID" placeholder="{{ship}}">
+      <input list="shipID" name="shipID" value="{{criteria.shipID}}" size="5">
       <datalist id="shipID">
         {{#each shipList}}
         <option value="{{this.id}}">{{this.ship}}</option>  
         {{/each}}    
-        </datalist>
+      </datalist>
       <input type="submit" value="Submit">
+      <br>
+      <h5>Filter on daily reports</h5>
+      <input name="size" value="{{criteria.size}}" size="3">&nbsp;evaluation days</input>
+      
+      <br>
+      <input name="maxSwell" value="{{criteria.maxSwell}}" size="3">&nbsp;m max Swell</input>
+      <br>
+      <input name="maxWind" value="{{criteria.maxWind}}" size="3">&nbsp;kn max Wind</input>
+      <br>
+      <input name="dist" value="{{criteria.dist}}" size="3">&nbsp;nm min sailing distance per day</input>
+      
     </form>
     
 

@@ -20,7 +20,6 @@ export function getNeuralNetFunction(allPositions, ship) {
   const maxSeaTemperature = 40;
 
   function scaleDownInput(position) {
-    console.log(position);
     const input = [
       (0.5 * position.draftAft + 0.5 * position.draftFwd - minDraft) / (maxDraft - minDraft),
       0.50 + position.projectedWindForce / maxWindForce / 2,
@@ -49,14 +48,14 @@ export function getNeuralNetFunction(allPositions, ship) {
     // Defaults values --> expected validation
     iterations: 20000, // the maximum times to iterate the training data --> number greater than 0
     errorThresh: 0.001, // the acceptable error percentage from training data --> number between 0 and 1
-    log: false, // true to use console.log, when a function is supplied it is used --> Either true or a function
+    log: true, // true to use console.log, when a function is supplied it is used --> Either true or a function
     logPeriod: 100, // iterations between logging out --> number greater than 0
     learningRate: 0.3, // scales with delta to effect training rate --> number between 0 and 1
     momentum: 0.2, // scales with next layer's change value --> number between 0 and 1
     callback: null, // a periodic call back that can be triggered while training --> null or function
     callbackPeriod: 10, // the number of iterations through the training data between callback calls --> number greater than 0
     timeout: 10000, // the max number of milliseconds to train for --> number greater than 0
-    hiddenLayer: [32, 64, 64, 32],
+    hiddenLayer: [5, 10, 10, 5],
     activation: 'sigmoid',
   };
 
