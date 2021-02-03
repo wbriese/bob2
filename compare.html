@@ -3,7 +3,7 @@
   <head>
       <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-      <script src=".\node_modules\chart.js\dist\Chart.min.js"></script>
+      <script src="chart.js\dist\Chart.min.js"></script>
 	  
 
 	<style>
@@ -38,11 +38,11 @@
           background-color: #dddddd;
         }
         </style>
-      <title>Amber Type Ship Performance Comparison</title>
+      <title>{{selectedShipType}} Type Ship Performance Comparison</title>
   </head>
   <body>
 
-    <h2>Amber Type Ship Performance average USD l/NM with max wind 20kn and 2m swell</h2>
+    <h2>{{selectedShipType}} Type Ship Performance average USD l/NM with max wind 20kn and 2m swell</h2>
    
   <canvas id="myChart" width="1600" height="800"></canvas>
   <canvas id="myChart2" width="640" height="480"></canvas>
@@ -88,7 +88,7 @@ var ctx2 = document.getElementById('myChart2').getContext('2d');
 				datasets: [
         {{#each dataSets}} 
         {
-					label: 'Neural {{this.ship.ship}}',
+					label: 'Regression Curve {{this.ship.ship}}',
 					backgroundColor: '{{this.ship.col}}',
 					borderColor: '{{this.ship.col}}',
 					data: [

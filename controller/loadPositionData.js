@@ -36,7 +36,6 @@ export default async function loadPositionData(criteria) {
   if (Number.isNaN(+criteria.maxWind)) criteria.maxWind = 20;
   if (Number.isNaN(+criteria.maxSwell)) criteria.maxSwell = 2;
   
-
   const data = await fetch(`http://api.routeguard.eu/RouteGuard/v1/ships/${criteria.shipID}/positions?Size=${criteria.size}&positionTypes=0&Sources=2`, {
     method: 'GET',
     withCredentials: true,

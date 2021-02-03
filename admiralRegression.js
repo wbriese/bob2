@@ -1,22 +1,17 @@
+/* eslint-disable max-len */
 import regression from 'regression';
 
-function getPropellerCurveFunction() {
-  const propCurve = [
-    [0, 0],
-    [15, 3820],
-    [16, 4930],
-    [17, 6684],
-    [17.5, 7549],
-    [18, 8363],
-    [18.5, 9372],
-    [19, 10493],
-  ];
-  const propCurveFunction = regression.polynomial(propCurve, { order: 3 });
+function getPropellerCurveFunction(speedConsPairs) {
+  console.log(speedConsPairs);
+  const propCurveFunction = regression.polynomial(speedConsPairs, { order: 3 });
+  console.log(propCurveFunction.string);
+  console.log(propCurveFunction.r2);
   return (speed) => propCurveFunction.predict(speed)[1] * 0.180 * 24 / 1000;
 }
 
-export function getRegressionFunction(mDataPoints) {
-  const propellerCurveFunction = getPropellerCurveFunction();
+export function getRegressionFunction(mDataPoints, shipType) {
+  console.log(shipType);
+  const propellerCurveFunction = getPropellerCurveFunction(shipType.speedConsPairs);
   //console.log(propellerCurveFunction(16));
   const dataPoints = mDataPoints.map((el) => [el.AVGSpeed, el.MEcons / propellerCurveFunction(el.AVGSpeed)]);
   //console.log(dataPoints);
@@ -26,21 +21,21 @@ export function getRegressionFunction(mDataPoints) {
   return (speed) => regressionFunction.predict(speed)[1] * propellerCurveFunction(speed);
 }
 
-export function getAdmiralPropCurve(regressionFunction) {
+export function getRegressionPropCurve(regressionFunction) {
   const propCurve = [];
-  for (let speed = 12; speed < 16.5; speed += 0.2) {
+  for (let speed = 12; speed < 16.6; speed += 0.2) {
     const cons = regressionFunction(speed);
-    propCurve.push({ speed, cons });
+    propCurve.push({ speed: speed.toFixed(2), cons: cons.toFixed(2) });
   }
   return propCurve;
 }
 
-export function getSeaTrialCurve() {
-  const propellerCurveFunction = getPropellerCurveFunction();
+export function getSeaTrialCurve(shipType) {
+  const propellerCurveFunction = getPropellerCurveFunction(shipType.speedConsPairs);
   const propCurve = [];
-  for (let speed = 12; speed < 16.5; speed += 0.2) {
+  for (let speed = 12; speed < 16.6; speed += 0.2) {
     const cons = propellerCurveFunction(speed);
-    propCurve.push({ speed, cons });
+    propCurve.push({ speed: speed.toFixed(2), cons: cons.toFixed(2) });
   }
   return propCurve;
 }
