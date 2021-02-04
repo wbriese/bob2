@@ -11,10 +11,10 @@ function addRelWindHeading(el) {
   const course = Number.parseFloat(+el.calculatedCourse.toFixed(2), 10);
   const windAngle = Number.isNaN(el.weather.swellDirection) ? Number.parseFloat(el.weather.dD10, 10) : 0;
   const diffAngle = Math.round(angles.distance(course, windAngle));
-  const projectedWindForce = Math.floor(Number.parseFloat(el.weather.fF10, 10) * Math.cos(angles.toRad(diffAngle)) * 10);
+  const projectedWindForce = (Number.parseFloat(el.calculatedSpeedOverGround) + Math.floor(Number.parseFloat(el.weather.fF10, 10) * Math.cos(angles.toRad(diffAngle)) * 10)) ** 3 / 1000;
   if (Number.isNaN(projectedWindForce)) console.log("Fehler Wind!!",el);
   const relWindHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
-  return { ...el, relWindHeading, projectedWindForce };
+  return { ...el, relWindHeading, projectedWindForce: projectedWindForce.toFixed(2) };
 }
 
 function addRelSwellHeading(el) {
