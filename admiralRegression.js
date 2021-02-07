@@ -15,7 +15,7 @@ export function getRegressionFunction(mDataPoints, shipType) {
     { MEconsDraftCorrected: position.MEcons * (shipType.displacement / (shipType.displacement + (position.draftAft + position.draftFwd - shipType.draftAft - shipType.draftFwd) * 0.5 * shipType.tpc * 100)) ** 0.6667 });
  
   let dataPoints = mDataPoints.map(addDraftCorrectedConsumption);
-  dataPoints.forEach(el=>console.log('MEcons', el.MEcons, ' MEcons corrected', el.MEconsDraftCorrected));
+  //dataPoints.forEach(el=>console.log('MEcons', el.MEcons, ' MEcons corrected', el.MEconsDraftCorrected));
 
   dataPoints = mDataPoints.map((el) => [el.AVGSpeed, el.MEconsDraftCorrected / propellerCurveFunction(el.AVGSpeed)]);
   const regressionFunction = regression.polynomial(dataPoints, { order: 0 });

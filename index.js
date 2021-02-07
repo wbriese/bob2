@@ -7,6 +7,7 @@ import getBearer from './getBearer.js';
 
 global.shipList = JSON.parse(fs.readFileSync('./controller/shipList.json', 'utf-8'));
 global.shipTypes = JSON.parse(fs.readFileSync('./controller/shipTypes.json', 'utf-8'));
+global.fuelPrice = 450;
 
 const app = new Koa();
 dotenv.config();

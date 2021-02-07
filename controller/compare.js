@@ -4,11 +4,11 @@ import fs from 'fs';
 import loadPositionData from './loadPositionData.js';
 import transformPositions from './transformPositions.js';
 import { getNeuralNetFunction, getNeuralNetPropCurve, getPropCurve } from './createNeural.js';
-import {getRegressionFunction, getRegressionPropCurve, getSeaTrialCurve } from '../admiralRegression.js';
+import { getRegressionFunction, getRegressionPropCurve, getSeaTrialCurve } from '../admiralRegression.js';
 
 async function loadDataSets(ship) {
   let mDataPoints = await loadPositionData({ shipID: ship.id });
-  mDataPoints = transformPositions(mDataPoints);
+  mDataPoints = transformPositions(mDataPoints, ship);
   // const avgfuelNM = mDataPoints.reduce((a, pos) => a + pos.fuelNM, 0) / mDataPoints.length;
   /* const neuralNetFunction = getNeuralNetFunction(mDataPoints, ship);
   const neuralPropCurve = getNeuralNetPropCurve(neuralNetFunction); */

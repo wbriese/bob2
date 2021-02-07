@@ -3,55 +3,75 @@
 import angles from 'angles';
 
 function addDateAndTime(el) {
-  const date = new Date(el.utcDate);
+  const date = new Date(el.dateUtc);
   return { ...el, DATE: date.toLocaleDateString('en-GB'), TIME: date.toLocaleTimeString('en-GB') };
 }
 
 function addRelWindHeading(el) {
-  const course = Number.parseFloat(+el.calculatedCourse.toFixed(2), 10);
-  const windAngle = Number.isNaN(el.weather.swellDirection) ? Number.parseFloat(el.weather.dD10, 10) : 0;
-  const diffAngle = Math.round(angles.distance(course, windAngle));
-  const projectedWindForce = (Number.parseFloat(el.calculatedSpeedOverGround) + Math.floor(Number.parseFloat(el.weather.fF10, 10) * Math.cos(angles.toRad(diffAngle)) * 10)) ** 3 / 1000;
+  const windAngle = !Number.isNaN(el.windSpeedKts) ? Number.parseFloat(el.windDirection, 10) : 0;
+  const diffAngle = Math.round(angles.distance(+el.course, windAngle));
+  const projectedWindForce = Math.sign(Math.cos(angles.toRad(diffAngle))) * el.speed * (+el.speed + el.windSpeedKts * Math.cos(angles.toRad(diffAngle))) ** 2 * 0.01;
   if (Number.isNaN(projectedWindForce)) console.log("Fehler Wind!!",el);
   const relWindHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
   return { ...el, relWindHeading, projectedWindForce: projectedWindForce.toFixed(2) };
 }
 
 function addRelSwellHeading(el) {
-  const course = Number.parseFloat(+el.calculatedCourse.toFixed(2), 10);
-  const swellAngle = Number.isNaN(el.weather.swellDirection) ? Number.parseFloat(el.weather.swellDirection, 10) : 0;
-  const diffAngle = Math.round(angles.distance(course, swellAngle));
+  const swellAngle = !Number.isNaN(el.swellDirection) ? Number.parseFloat(el.swellDirection, 10) : 0;
+  const diffAngle = Math.round(angles.distance(+el.course, swellAngle));
   const relSwellHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
-  const projectedSwellForce = Math.floor(Number.parseFloat(el.weather.swellHeight, 10) * Math.cos(angles.toRad(diffAngle)) * 100);
+  const projectedSwellForce = el.speedWater * el.swellHeight * Math.cos(angles.toRad(diffAngle));
   if (Number.isNaN(projectedSwellForce)) console.log("Fehler !! Swell:",el);
-  return { ...el, relSwellHeading, projectedSwellForce };
+  return { ...el, relSwellHeading, projectedSwellForce: projectedSwellForce.toFixed(2) };
+}
+
+function addSpeedWater(el) {
+  const speed = +el.speed;
+  const currentAngle = !Number.isNaN(el.currentSpeed) ? Number.parseFloat(el.currentDirection, 10) : 0;
+  const diffAngle = Math.round(angles.distance(+el.course, currentAngle));
+  const relCurrentHeading = diffAngle < 90 ? `${diffAngle}° (astern)` : `${diffAngle}° (ahead)`;
+  const currentDifX = +el.currentSpeed * Math.cos(angles.toRad(diffAngle));
+  const currentDifY = +el.currentSpeed * Math.sin(angles.toRad(diffAngle));
+  const speedWater = Math.sqrt((speed - currentDifX) ** 2 + currentDifY ** 2);
+  if (Number.isNaN(currentDifX) || Number.isNaN(currentDifY)) console.log("Fehler !! speedWater:",el);
+  el.currentSpeed = el.currentSpeed.toFixed(2);
+  return { ...el, speedWater: speedWater.toFixed(2), relCurrentHeading };
 }
 
 function addProperties(el) {
-  const SPEED_KNOTS = Number.parseFloat(el.calculatedSpeedOverGround.toFixed(2));
-  const COURSE = Number.parseInt(el.calculatedCourse, 10);
-  const MEcons = Number.parseFloat(el.bunkerConsumerValues[0].val, 10);
-  const AEcons = Number.parseFloat(el.bunkerConsumerValues[1].val, 10);
-  const dist = Number.parseFloat(el.additionalValues.find((item) => item.id === 7).val, 10);
-  const draftAft = Number.parseFloat(el.additionalValues.find((item) => item.id === 1).val, 10);
-  const draftFwd = Number.parseFloat(el.additionalValues.find((item) => item.id === 2).val, 10);
-  const nextPort = el.additionalValues.find((item) => item.id === 25).val;
-  const distToGo = Number.parseFloat(el.additionalValues.find((item) => item.id === 45).val, 10);
-  const AVGSpeed = Number.parseFloat(el.additionalValues.find((item) => item.id === 55).val, 10);
-  const fuelNM = dist ? Math.floor(10 * ((MEcons + AEcons) * 1000 / (dist))) / 10 : 0;
-  const USDNM = dist ? Math.floor(10 * (fuelNM * 300 / 1000 + 12000 / (AVGSpeed * 24))) / 10 : 0;
-  const MEconsAvgSpeed = dist ? Math.floor(10 * (MEcons + AEcons) / dist * AVGSpeed * 24) / 10 : 0;
-  const seaTemperature = parseFloat(el.weather.seaTemperature);
+  const SPEED_KNOTS = Number.parseFloat(el.speed.toFixed(2));
+  const COURSE = Number.parseInt(el.course, 10);
+  const MEcons = Number.parseFloat(el.bunkerHFOLSMainEngine, 10);
+  const AEcons = Number.parseFloat(el.bunkerHFOLSAuxiliaryEngines, 10);
+  const dist = Number.parseFloat(el.observedDistance, 10);
+  const draftAft = Number.parseFloat(el.draftAft, 10);
+  const draftFwd = Number.parseFloat(el.draftFwd, 10);
+  const nextPort = el.destination;
+  const distToGo = Number.parseFloat(el.milesToGo, 10);
+  const AVGSpeed = Number.parseFloat(el.avgObsSpeed, 10);
+  const fuelNM = (MEcons + AEcons) * 1000 / dist * el.speedWater / el.speed;
+  //const MEconsAvgSpeed = dist ? Math.floor(10 * (MEcons + AEcons) / dist * AVGSpeed * 24) / 10 : 0;
+  const rpmSpeedRatio = el.rpm / el.speedWater;
+  //const seaTemperature = parseFloat(el.weather.seaTemperature);
   return {
-    ...el, SPEED_KNOTS, COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, seaTemperature, AVGSpeed, fuelNM, USDNM, MEconsAvgSpeed,
+    ...el, SPEED_KNOTS, rpmSpeedRatio: rpmSpeedRatio.toFixed(2), COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, AVGSpeed, fuelNM: fuelNM.toFixed(2),
   };
+}
+
+function addUSDNM(el) {
+  const ship = global.shipList.find((item) => Number(item.id) === el.shipId);
+  const shipType = global.shipTypes.find((item) => item.type === ship.type);
+  const USDNM = +el.fuelNM * global.fuelPrice / 1000 + shipType.TCRate / (el.AVGSpeed * 24);
+  return { ...el, USDNM: USDNM.toFixed(2) };
 }
 
 export default function transformPositions(positions) {
   let mDataPoints = [...positions];
   mDataPoints = mDataPoints.map(addDateAndTime);
   mDataPoints = mDataPoints.map(addRelWindHeading);
+  mDataPoints = mDataPoints.map(addSpeedWater);
   mDataPoints = mDataPoints.map(addRelSwellHeading);
   mDataPoints = mDataPoints.map(addProperties);
+  mDataPoints = mDataPoints.map(addUSDNM);
   return mDataPoints;
 }

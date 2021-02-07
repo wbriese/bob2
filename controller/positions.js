@@ -3,8 +3,8 @@ import hb from 'handlebars';
 import fs from 'fs';
 // import { getNeuralNetFunction, getNeuralNetPropCurve, getPropCurve } from './createNeural.js';
 import { getRegressionFunction, getSeaTrialCurve, getRegressionPropCurve } from '../admiralRegression.js'
-import loadPositionData from './loadPositionData.js';
-import transformPositions from './transformPositions.js';
+import loadPositionData from './loadPositionData2.js';
+import transformPositions from './transformPositions2.js';
 
 function calcAVGSpeed(mDataPoints) {
   return Math.floor(mDataPoints.reduce(
@@ -32,11 +32,8 @@ export default async function showPositions(ctx) {
   const propCurve = getSeaTrialCurve(shipType);
   const avgSpeed = calcAVGSpeed(mDataPoints);
 
-  const view = fs.readFileSync('positions.html', 'utf-8');
+  const view = fs.readFileSync('positions2.html', 'utf-8');
   const template = hb.compile(view);
-  console.log({
-    positions: mDataPoints, ship, GOOGLE_MAP_KEY, shipList: global.shipList, avgSpeed, propCurve, neuralPropCurve, criteria
-  });
   ctx.body = template({
     positions: mDataPoints, ship, GOOGLE_MAP_KEY, shipList: global.shipList, avgSpeed, propCurve, neuralPropCurve, criteria
   });
