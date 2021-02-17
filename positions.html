@@ -72,14 +72,10 @@
         <th>Date</th>
         <th>Course</th>
         <th>Speed</th>
-        <!-- <th>Speed Water</th> -->
         <th>rpm</th>
-        <th>rpm/Speed</th>
         <th>M/E</th>
-        <th>Neural M/E</th>
+        
         <th>A/E</th>
-      <!--   <th>curr</th>
-        <th>curr dir</th> -->
         <th>wind</th>
         <th>wDir</th>
         <th>Wind Force</th>
@@ -101,22 +97,19 @@
         <td>{{this.DATE}}</td>
         <td>{{this.COURSE}}°</td>
         <td>{{this.AVGSpeed}}</td>
-        <!-- <td>{{this.speedWater}}</td> -->
         <td>{{this.rpm}}</td>
-        <td>{{this.rpmSpeedRatio}}</td>
-        <td>{{this.MEcons}}</td>
-        <td>{{this.neuralCons}}</td>
+        <td>{{this.MEconsAvgSpeed}}</td>
+        
         <td>{{this.AEcons}}</td>
- <!--        <td>{{this.currentSpeed}}</td>
-        <td>{{this.relCurrentHeading}}</td> -->
-        <td>{{this.weather.swellHeight}}</td>
+        <td>{{this.windSpeedKts}}</td>
         <td>{{this.relWindHeading}}</td>
         <td>{{this.projectedWindForce}}</td>
-        <td>{{this.weather.swellHeight}}</td>
+        <td>{{this.swellHeight}}</td>
         <td>{{this.relSwellHeading}}</td>
         <td>{{this.projectedSwellForce}}</td>
         <td>{{this.draftAft}}</td>
         <td>{{this.draftFwd}}</td>
+        <td>{{this.seaTemperature}}</td>
         <td>{{this.dist}}</td>
         <td>{{this.distToGo}}</td>
         <td>{{this.fuelNM}}</td>
@@ -130,7 +123,7 @@
     
   </div>
 
-  <canvas id="myChart" width="1200" height="400"></canvas>
+  <canvas id="myChart" width="1200" height="200"></canvas>
   <canvas id="myChart2" width="640" height="480"></canvas>
   <script>
   var ctx = document.getElementById('myChart').getContext('2d');
@@ -138,27 +131,38 @@
     type: 'bar',
     data: {
 				datasets: [{
-					label: 'l/NM (through Water)',
+					label: 'USD/NM',
 					backgroundColor: 'rgb(255, 99, 132)',
 					borderColor: 'rgb(255, 99, 132)',
 					data: [
                 {{#each positions}}  
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.fuelNM}} },
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.USDNM}} },
                 {{/each}}
             		],
 					fill: false,
         },
         {
-					label: 'rpm/Speed Ratio',
+					label: 'Projected Wind Force',
 					backgroundColor: 'rgb(201, 203, 207)',
 					borderColor: 'rgb(201, 203, 207)',
 					data: [
                 {{#each positions}}  
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.rpmSpeedRatio}}*10 },
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedWindForce}}/20 },
                 {{/each}}
             		],
 					fill: false,
-        }, ]
+        },
+        {
+					label: 'Projected Swell Force',
+					backgroundColor: 'rgb(54, 162, 235)',
+					borderColor: 'rgb(54, 162, 235)',
+					data: [
+                {{#each positions}}  
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedSwellForce}}/10 },
+                {{/each}}
+            		],
+					fill: false,
+				}]
 			},
     options: {
         scales: {
@@ -183,13 +187,12 @@ var ctx2 = document.getElementById('myChart2').getContext('2d');
 					borderColor: 'rgb(255, 99, 132)',
 					data: [
                 {{#each positions}}  
-                {x: {{this.AVGSpeed}}, y: {{this.MEconsAvgSpeed}} },
+                {x: {{this.rpm}}, y: {{this.rpmSpeedRatio}} },
                 {{/each}}
             		],
 					fill: false,
         },
-        
-        {
+        /* {
 					label: 'Ship Standard Propeller Curve',
 					backgroundColor: 'rgb(100, 103, 207)',
 					borderColor: 'rgb(100, 103, 207)',
@@ -212,7 +215,7 @@ var ctx2 = document.getElementById('myChart2').getContext('2d');
                 ],
           type: 'line',
 					fill: false,
-        }
+        } */
       ]
       },
       options: {

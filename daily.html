@@ -44,26 +44,6 @@
 
     <h2>Veslink Daily Reports of MV {{ship.ship}}</h2>
    
-    <form action="/ship">
-      <input list="shipID" name="shipID" value="{{criteria.shipID}}" size="5">
-      <datalist id="shipID">
-        {{#each shipList}}
-        <option value="{{this.id}}">{{this.ship}}</option>  
-        {{/each}}    
-      </datalist>
-      <input type="submit" value="Submit">
-      <br>
-      <h5>Filter on daily reports</h5>
-      <input name="size" value="{{criteria.size}}" size="3">&nbsp;evaluation days</input>
-      
-      <br>
-      <input name="maxSwell" value="{{criteria.maxSwell}}" size="3">&nbsp;m max Swell</input>
-      <br>
-      <input name="maxWind" value="{{criteria.maxWind}}" size="3">&nbsp;kn max Wind</input>
-      <br>
-      <input name="dist" value="{{criteria.dist}}" size="3">&nbsp;nm min sailing distance per day</input>
-      
-    </form>
     
 
     <div class="container">
@@ -72,9 +52,11 @@
         <th>Date</th>
         <th>Course</th>
         <th>Speed</th>
+        <th>Speed Water</th>
+        <th>Current</th>
+        <th>Curr Angle</th>
         <th>rpm</th>
         <th>M/E</th>
-        <th>Neural M/E</th>
         <th>A/E</th>
         <th>wind</th>
         <th>wDir</th>
@@ -82,9 +64,7 @@
         <th>swell</th>
         <th>sDir</th>
         <th>Swell Force</th>
-        <th>Draft A</th>
-        <th>Draft F</th>
-        <th>Sea °C</th>
+        <th>Draft A/F</th>
         <th>Dist.</th>
         <th>to go</th>
         <th>fuel l/nm</th>
@@ -98,19 +78,19 @@
         <td>{{this.DATE}}</td>
         <td>{{this.COURSE}}°</td>
         <td>{{this.AVGSpeed}}</td>
+        <td>{{this.speedWater}}</td>
+        <td>{{this.currentSpeed}}</td>
+        <td>{{this.relCurrentHeading}}</td>
         <td>{{this.rpm}}</td>
-        <td>{{this.MEconsAvgSpeed}}</td>
-        <td>{{this.neuralCons}}</td>
+        <td>{{this.MEcons}}</td>
         <td>{{this.AEcons}}</td>
-        <td>{{this.weather.fF10}}</td>
+        <td>{{this.windSpeedKts}}</td>
         <td>{{this.relWindHeading}}</td>
         <td>{{this.projectedWindForce}}</td>
-        <td>{{this.weather.swellHeight}}</td>
+        <td>{{this.swellHeight}}</td>
         <td>{{this.relSwellHeading}}</td>
         <td>{{this.projectedSwellForce}}</td>
-        <td>{{this.draftAft}}</td>
-        <td>{{this.draftFwd}}</td>
-        <td>{{this.seaTemperature}}</td>
+        <td>{{this.draftAft}}/{{this.draftFwd}}</td>
         <td>{{this.dist}}</td>
         <td>{{this.distToGo}}</td>
         <td>{{this.fuelNM}}</td>
@@ -120,12 +100,13 @@
       {{/each}}
       
     </table>
-    <div><img src="https://maps.googleapis.com/maps/api/staticmap?scale=2&maptype=terrain&size=1280x1280&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key={{GOOGLE_MAP_KEY}}"></div>
+    <div><img src="https://maps.googleapis.com/maps/api/staticmap?scale=2&maptype=terrain&size=640x480&markers=label:P|color:red|size:1{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&path=color:0x0000ff|weight:5{{#each positions}}|{{this.latitude}},{{this.longitude}}{{/each}}&key={{GOOGLE_MAP_KEY}}"></div>
     
   </div>
 
-  <canvas id="myChart" width="1200" height="200"></canvas>
+  <canvas id="myChart" width="1000" height="200"></canvas>
   <canvas id="myChart2" width="640" height="480"></canvas>
+  
   <script>
   var ctx = document.getElementById('myChart').getContext('2d');
   var chart = new Chart(ctx, {
@@ -142,30 +123,7 @@
             		],
 					fill: false,
         },
-        {
-					label: 'Projected Wind Force',
-					backgroundColor: 'rgb(201, 203, 207)',
-					borderColor: 'rgb(201, 203, 207)',
-					data: [
-                {{#each positions}}  
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedWindForce}}/20 },
-                {{/each}}
-            		],
-					fill: false,
-        },
-        {
-					label: 'Projected Swell Force',
-					backgroundColor: 'rgb(54, 162, 235)',
-					borderColor: 'rgb(54, 162, 235)',
-					data: [
-                {{#each positions}}  
-                {t: new Date("{{this.DATE}}").valueOf(), y: {{this.projectedSwellForce}}/10 },
-                {{/each}}
-            		],
-					fill: false,
-				}]
-			},
-    options: {
+        options: {
         scales: {
             xAxes: [{
                 type: 'time',
@@ -176,7 +134,6 @@
         }
     }
 });
-
 
 var ctx2 = document.getElementById('myChart2').getContext('2d');
   var chart2 = new Chart(ctx2, {
@@ -228,7 +185,6 @@ var ctx2 = document.getElementById('myChart2').getContext('2d');
         }
     }
 });
-
   </script>
  
   </body>

@@ -46,6 +46,7 @@
    
   <canvas id="myChart" width="1600" height="800"></canvas>
   <canvas id="myChart2" width="640" height="480"></canvas>
+  <canvas id="myChart3" width="640" height="480"></canvas>
   
   <script>
   var ctx = document.getElementById('myChart').getContext('2d');
@@ -62,6 +63,39 @@
           {{#each this.mDataPoints}}
                 
                 {t: new Date("{{this.DATE}}").valueOf(), y: {{../ship.avgUSDNM}} },
+                {{/each}}
+            		],
+					fill: false,
+        },
+        {{/each}}
+        ]
+			},
+    options: {
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'month'
+                }
+            }]
+        }
+    }
+});
+
+var ctx3 = document.getElementById('myChart3').getContext('2d');
+  var chart = new Chart(ctx3, {
+    type: 'line',
+    data: {
+				datasets: [
+        {{#each dataSets}} 
+        {
+					label: "{{this.ship.ship}}",
+					backgroundColor: "{{this.ship.col}}",
+					borderColor: "{{this.ship.col}}",
+					data: [
+          {{#each this.mDataPoints}}
+                
+                {t: new Date("{{this.DATE}}").valueOf(), y: {{../ship.avgSlip}} },
                 {{/each}}
             		],
 					fill: false,

@@ -10,7 +10,7 @@ function addDateAndTime(el) {
 function addRelWindHeading(el) {
   const windAngle = !Number.isNaN(el.windSpeedKts) ? Number.parseFloat(el.windDirection, 10) : 0;
   const diffAngle = Math.round(angles.distance(+el.course, windAngle));
-  const projectedWindForce = Math.sign(Math.cos(angles.toRad(diffAngle))) * el.speed * (+el.speed + el.windSpeedKts * Math.cos(angles.toRad(diffAngle))) ** 2 * 0.01;
+  const projectedWindForce = el.windSpeedKts * Math.cos(angles.toRad(diffAngle))  ;
   if (Number.isNaN(projectedWindForce)) console.log("Fehler Wind!!",el);
   const relWindHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
   return { ...el, relWindHeading, projectedWindForce: projectedWindForce.toFixed(2) };
@@ -20,7 +20,7 @@ function addRelSwellHeading(el) {
   const swellAngle = !Number.isNaN(el.swellDirection) ? Number.parseFloat(el.swellDirection, 10) : 0;
   const diffAngle = Math.round(angles.distance(+el.course, swellAngle));
   const relSwellHeading = diffAngle < 90 ? `${diffAngle}° (ahead)` : `${diffAngle}° (astern)`;
-  const projectedSwellForce = el.speedWater * el.swellHeight * Math.cos(angles.toRad(diffAngle));
+  const projectedSwellForce = el.swellHeight * Math.cos(angles.toRad(diffAngle));
   if (Number.isNaN(projectedSwellForce)) console.log("Fehler !! Swell:",el);
   return { ...el, relSwellHeading, projectedSwellForce: projectedSwellForce.toFixed(2) };
 }
@@ -49,19 +49,22 @@ function addProperties(el) {
   const nextPort = el.destination;
   const distToGo = Number.parseFloat(el.milesToGo, 10);
   const AVGSpeed = Number.parseFloat(el.avgObsSpeed, 10);
-  const fuelNM = (MEcons + AEcons) * 1000 / dist * el.speedWater / el.speed;
+  const fuelNM = (MEcons + AEcons) * 1000 / dist ;
   //const MEconsAvgSpeed = dist ? Math.floor(10 * (MEcons + AEcons) / dist * AVGSpeed * 24) / 10 : 0;
   const rpmSpeedRatio = el.rpm / el.speedWater;
-  //const seaTemperature = parseFloat(el.weather.seaTemperature);
   return {
-    ...el, SPEED_KNOTS, rpmSpeedRatio: rpmSpeedRatio.toFixed(2), COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, AVGSpeed, fuelNM: fuelNM.toFixed(2),
+    ...el, SPEED_KNOTS, rpmSpeedRatio: rpmSpeedRatio.toFixed(2), COURSE, MEcons, AEcons, dist, draftAft, draftFwd, nextPort, distToGo, AVGSpeed, fuelNM: fuelNM.toFixed(2), 
   };
 }
 
 function addUSDNM(el) {
+  //console.log(el.shipId);
   const ship = global.shipList.find((item) => Number(item.id) === el.shipId);
+  //console.log('Ship ', ship);
   const shipType = global.shipTypes.find((item) => item.type === ship.type);
+  //console.log('Ship Type', shipType);
   const USDNM = +el.fuelNM * global.fuelPrice / 1000 + shipType.TCRate / (el.AVGSpeed * 24);
+  //console.log('USDNM', USDNM);
   return { ...el, USDNM: USDNM.toFixed(2) };
 }
 

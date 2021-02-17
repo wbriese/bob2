@@ -22,17 +22,21 @@ function basicFilter(el) {
 
 
 export default async function loadPositionData(criteria) {
-  console.log(criteria);
+  //console.log(criteria);
   if (Number.isNaN(+criteria.shipID)) criteria.shipID = 10878;
   if (Number.isNaN(+criteria.size)) criteria.size = 365;
   if (Number.isNaN(+criteria.dist)) criteria.dist = 200;
   if (Number.isNaN(+criteria.maxWind)) criteria.maxWind = 20;
   if (Number.isNaN(+criteria.maxSwell)) criteria.maxSwell = 2;
-  const dateFrom = new Date(+Date.now() - criteria.size * 86400000).toISOString();
+  //console.log(criteria.dateFrom);
+  const dateFrom = criteria.dateFrom ? new Date(criteria.dateFrom).toISOString():
+  new Date(+Date.now() - criteria.size * 86400000).toISOString();
+  const dateTo = criteria.dateTo ? new Date(criteria.dateTo).toISOString():
+  new Date(Date.now()).toISOString();
   
-  console.log(`http://api.routeguard.eu/RouteGuard/v1/reports/analysis/segments?ShipId=${criteria.shipID}&DateFrom=${dateFrom}`);
+  console.log(`http://api.routeguard.eu/RouteGuard/v1/reports/analysis/segments?ShipId=${criteria.shipID}&DateFrom=${dateFrom}&DateTo=${dateTo}`);
 
-  const data = await fetch(`http://api.routeguard.eu/RouteGuard/v1/reports/analysis/segments?ShipId=${criteria.shipID}&DateFrom=${dateFrom}`, {
+  const data = await fetch(`http://api.routeguard.eu/RouteGuard/v1/reports/analysis/segments?ShipId=${criteria.shipID}&DateFrom=${dateFrom}&DateTo=${dateTo}`, {
     method: 'GET',
     withCredentials: true,
     credentials: 'include',
@@ -43,9 +47,9 @@ export default async function loadPositionData(criteria) {
   }).then((response) => response.json());
 
   let mDataPoints = data.items;
-  console.log("Before Filter", mDataPoints.length);
+  //console.log("Before Filter", mDataPoints.length);
   mDataPoints = mDataPoints.filter(basicFilter);
-  console.log("After Filter", mDataPoints.length);
+  //console.log("After Filter", mDataPoints.length);
 
   /* mDataPoints.forEach(element => {
   console.log(JSON.stringify(element));

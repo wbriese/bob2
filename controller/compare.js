@@ -17,7 +17,9 @@ async function loadDataSets(ship) {
   const neuralPropCurve = getRegressionPropCurve(regressionFunction);
   mDataPoints = mDataPoints.map((pos) => Object.assign(pos, { neuralCons: regressionFunction(pos.AVGSpeed).toFixed(2) }));
   const avgUSDNM = mDataPoints.reduce((a, pos) => a + pos.USDNM, 0) / mDataPoints.length;
-  const shipAVG = Object.assign(ship, { avgUSDNM });
+  const avgSlip = mDataPoints.reduce((a, pos) => a + pos.rpmSpeedRatio, 0) / mDataPoints.length;
+  const shipAVG = Object.assign(ship, { avgUSDNM, avgSlip });
+  //console.log(shipAVG);
   return { ship: shipAVG, mDataPoints, neuralPropCurve };
 }
 

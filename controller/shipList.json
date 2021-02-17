@@ -9,7 +9,7 @@
  {"type": "Amber", "id":10877,"ship":"BBC Ruby","col": "lightgreen" },  
  {"type": "Amber", "id":10874,"ship":"BBC Coral","col": "siena" },
  {"type": "Amber", "id":10878,"ship":"BBC Sapphire", "col":"blue" },
- {"type": "Amber", "id":10895,"ship":"BBC Congo","col": "red" },
+    {"type": "River", "id":10895,"ship":"BBC Congo","col": "red" },
     {"type": "River", "id":10896,"ship":"BBC Ganges","col": "green" },  
     {"type": "River", "id":10897,"ship":"BBC Seine","col": "yellow" },  
     {"type": "River", "id":10898,"ship":"BBC Nile","col": "orange" },  
